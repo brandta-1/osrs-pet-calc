@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+    <head>
+
+        <title>Example</title>
+
+    </head>
+
+
+
+    <style type = "text/css">
+
+        #header {
+
+            color:cornflowerblue
+
+        }
+
+    </style>
+
+
+
+    <body>
+
+
+
+        <h1 id="header" class="center">Agility Pet Calc</h1>
+
+
+
+        <input> starting level </input>
+
+        <input> ending level </input>
+
+
+
+
+
+        <button id="butt" onclick="load()">
+
+
+
+            Chance for pet
+
+
+
+        </button>
+
+
+
+        <h3 id="answer"> </h3>
+
+
+
+    </body>
+
+
+
+    <script>
+
+        
+
+        var inputs = document.getElementsByTagName("input");
+
+
+
+
+
+        //xp reward at each course, forgot how to do JSON await async function thing
+
+        const xs = [86.5,120,180,238,240,440,570,890,780,793];
+
+
+
+        //drop rate at each course
+
+        const ds = [35609,33005,26648,24410,36842,26806,35205,33422,31063,34440];
+
+
+
+        function load(){
+
+            
+
+            //user input
+
+            var x = inputs[0].value;
+
+            var y = inputs[1].value;
+
+            x = +x;
+
+            y = +y;
+
+            
+
+           //arrays used later 
+
+           const xp = [];
+
+           var seg = [];
+
+           var laps = [];
+
+           var ch =[];
+
+           var chs=[];
+
+           var lapsn=[];
+
+           
+
+
+
+            //for each level, calculate xp neeeded to level up
+
+            for(var i=1;i<=99;i++){
+
+
+
+                xp[i] = (i-1) + 300 * Math.pow(2,(i-1)/7);
+
+                xp[i] = Math.floor(xp[i]/4);
+
+
+
+            }
+
+            
+
+            //this is where the poo code begins
+
+            //for each course, take its respective levels (ie. course 1 gets 1-9, course 2 gets 10-20, etc.)
+
+            for(var j=0;j<=9;j++){
+
+
+
+                seg =xp.slice(10*j,10*(j+1));
+
+                
+
+                //divide each level xp by course xp to get laps per level
+
+                for(var k=0;k<10;k++){
+
+
+
+                    seg[k] = Math.ceil(seg[k]/xs[j]);
+
+        
+
+                }
+
+                
+
+                //put laps for each level into an array
+
+                laps = laps.concat(seg);
+
+
+
+            }
+
+
+
+            //check work
+
+            console.log(laps);
+
+
+
+            //there are 99 levels, so you only level up 98 times, not 99 times; cleaned up array
+
+            for(var i=1;i<100;i++){
+
+
+
+                laps[i-1] = laps[i];
+
+
+
+            }
+
+
+
+            lapsn = laps.slice(0,99);
+
+
+
+            //check work
+
+            console.log(lapsn);
+
+
+
+            //for each course, calculate chance to get pet at each level
+
+            for(var j=0;j<10;j++){
+
+
+
+                //drop rate is affected by course and level
+
+                for(var i=0;i<99;i++){
+
+                
+
+                    chs[i] = 1-(1/(ds[j]-(i*25)));
+
+
+
+                    chs[i] = Math.pow(chs[i],laps[i]);
+
+
+
+                }
+
+
+
+                //before iterating to the next course, save the 10 levels that match the current course
+
+                seg=chs.slice(10*j,10*(j+1));
+
+                
+
+                ch = ch.concat(seg);
+
+
+
+                //check work
+
+                console.log(ch);
+
+                console.log(ds[j]);
+
+            }
+
+
+
+            
+
+
+
+           
+
+            //following 3 lines calc final probability by multiplying all level chances in user's range
+
+            var ans = ch[x];
+
+
+
+            for(i=x+1;i<y;i++){
+
+
+
+                ans *= ch[i];
+
+
+
+            }
+
+
+
+            console.log(1-ans);
+
+
+
+            document.getElementById("answer").innerHTML = 1-ans;
+
+        }
+
+
+
+
+
+
+
+
+
+    </script>
+
+
+
+</html>
